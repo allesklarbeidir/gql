@@ -159,6 +159,22 @@ export function buildASTSchema( // eslint-disable-line complexity
         nodeMapWithAllReferences[name].push(d);
         break;
       }
+      case 'TypeExtensionDefinition': {
+        const _d = d.definition;
+        const name = _d.name.value;
+        // eslint-disable-next-line no-negated-condition
+        if (!nodeMap[name]) {
+          typeDefs.push(_d);
+          nodeMap[name] = _d;
+        } else {
+          const existingTd = typeDefs.filter((td) => td.name.value === name)[0] || null;
+          if (existingTd) {
+            existingTd.fields = [].concat(...[...existingTd.fields, (_d.fields || [])]);
+          }
+        }
+
+        break;
+      }
       case DIRECTIVE_DEFINITION:
         directiveDefs.push(d);
         break;
